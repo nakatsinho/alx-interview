@@ -1,48 +1,52 @@
 #!/usr/bin/python3
 """
-module contains a script that reads stdin line by line and computes metrics
+This module contains a method that reads stdin line by line and
+computes metrics
 """
+import dis
 import sys
 
 
-status_codes = {
-    "200": 0,
-    "301": 0,
-    "400": 0,
-    "401": 0,
-    "403": 0,
-    "404": 0,
-    "405": 0,
-    "500": 0
-}
+def display_metrics(total_size, status_code):
+    """
+    Function that print the metrics
+    """
 
-file_size = 0
+    print('File size: {}'.format(total_size))
+    for key, value in sorted(status_code.items()):
+        if value != 0:
+            print('{}: {}'.format(key, value))
 
 
-def print_metrics():
-    """prints of the logs"""
-    print("File size: {}".format(file_size))
-    for status in sorted(status_codes.keys()):
-        if status_codes[status]:
-            print("{}: {}".format(status, status_codes[status]))
+if __name__ == '__main__':
+    total_size = 0
+    status_code = {
+        '200': 0,
+        '301': 0,
+        '400': 0,
+        '401': 0,
+        '403': 0,
+        '404': 0,
+        '405': 0,
+        '500': 0
+    }
 
-
-if __name__ == "__main__":
-    count = 0
     try:
+        i = 0
         for line in sys.stdin:
-            try:
-                elems = line.split()
-                file_size += int(elems[-1])
-                if elems[-2] in status_codes:
-                    status_codes[elems[-2]] += 1
-            except Exception:
-                pass
-            if count == 9:
-                print_metrics()
-                count = -1
-            count += 1
+            args = line.split()
+            if len(args) > 6:
+                status = args[-2]
+                file_size = args[-1]
+                total_size += int(file_size)
+                if status in status_code:
+                    i += 1
+                    status_code[status] += 1
+                    if i % 10 == 0:
+                        display_metrics(total_size, status_code)
+
     except KeyboardInterrupt:
-        print_metrics()
+        display_metrics(total_size, status_code)
         raise
-    print_metrics()
+    else:
+        display_metrics(total_size, status_code)
