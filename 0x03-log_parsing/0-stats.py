@@ -1,8 +1,7 @@
-#!/usr/bin/python3
-'''A script for parsing HTTP request logs.
-'''
-import re
+#!/usr/bin/env python3
 
+import sys
+import re
 
 def extract_input(input_line):
     '''Extracts sections of a line of an HTTP request log.
@@ -35,7 +34,7 @@ def print_statistics(total_file_size, status_codes_stats):
     for status_code in sorted(status_codes_stats.keys()):
         num = status_codes_stats.get(status_code, 0)
         if num > 0:
-            print('{:s}: {:d}'.format(status_code, num), flush=True)
+            print('{:s}: {:d}'.format(str(status_code), num), flush=True)
 
 
 def update_metrics(line, total_file_size, status_codes_stats):
@@ -70,8 +69,7 @@ def run():
         '500': 0,
     }
     try:
-        while True:
-            line = input()
+        for line in sys.stdin:
             total_file_size = update_metrics(
                 line,
                 total_file_size,
